@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IFE JavaScript Task 03</title>
+    </head>
+<body>
+
+    <ul id="source">
+        <li>北京空气质量：<b>90</b></li>
+        <li>上海空气质量：<b>70</b></li>
+        <li>天津空气质量：<b>80</b></li>
+        <li>广州空气质量：<b>50</b></li>
+        <li>深圳空气质量：<b>40</b></li>
+        <li>福州空气质量：<b>32</b></li>
+        <li>成都空气质量：<b>90</b></li>
+        <li>石家庄空气质量：<b>200</b></li>
+    </ul>
+
+    <ul id="sorted">
+        <!-- 
+        <li>第一名：北京空气质量：<b>90</b></li>
+        <li>第二名：北京空气质量：<b>90</b></li>
+        <li>第三名：北京空气质量：<b>90</b></li>
+        -->
+    </ul>
+
+    <button id="sort-btn">排序</button>
+
+<script type="text/javascript">
+
+/**
+ * getData方法
+ * 读取id为source的列表，获取其中城市名字及城市对应的空气质量
+ * 返回一个数组，格式见函数中示例
+ */
+function getData() {
+    /*
+    data = [
+        ["北京", 90],
+        ["北京", 90]
+        ……
+    ]
+    */
+    var source = document.getElementById('source').children;
+    var data =  [];
+    for (var i = 0; i < source.length; i++) {
+        var cityIndex = source[i].textContent.indexOf('空');
+        var city = source[i].textContent.substring(0, cityIndex);
+        var airQuality = parseInt(source[i].firstElementChild.textContent);
+        data.push([city, airQuality]);
+    }
+    return data;
+}
+
+/**
+ * sortAqiData
+ * 按空气质量对data进行从小到大的排序
+ * 返回一个排序后的数组
+ */
+function sortAqiData(data) {
+    data.sort(function(x, y) {
+        if (x[1] < y[1]) {
+            return -1;
+        }
+        if (x[1] > y[1]) {
+            return 1;
+        }
+        return 0;
+    });
+    return data; 
+}
+
+/**
+ * render
+ * 将排好序的城市及空气质量指数，输出显示到id位sorted的列表中
+ * 格式见ul中的注释的部分
+ */
+function render(data) {
+    // 清除之前的数据
+    list = document.getElementById('sorted');
+    list.innerHTML = '';
+    // 支持不超过10条数据
+    var rankings = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+    var ptr = 0; // 指向当前的中文名次
+    var repeatRanking = 0; // 相同数据多次出现时记住下一个名次的位置
+    for(var i = 0; i < data.length; i++) {
+        // DOM操作
+        var childlist = document.createElement('li');
+        childlist.innerHTML = '第' + rankings[ptr] + '名：' + data[i][0] + '空气质量：' + '<b>' + data[i][1] + '</b>';
+        list.appendChild(childlist);
+        // 判断下一个城市的中文名次
+        if (i + 1 < data.length) {
+            if (data[i+1][1] > data[i][1]) {
+                ptr = ptr + repeatRanking + 1;
+                repeatRanking = 0;
+            }
+            else {
+                repeatRanking++;
+            } 
+        }
+        // 表示超出范围
+        if (ptr > 9) {
+            return;
+        }
+    }
+}
+
+function btnHandler() {
+    var aqiData = getData();
+    aqiData = sortAqiData(aqiData);
+    render(aqiData);
+}
+
+function init() {
+    // 在这下面给sort-btn绑定一个点击事件，点击时触发btnHandler函数
+    button = document.getElementById('sort-btn');
+    button.addEventListener('click', btnHandler);
+}
+
+init();
+
+</script>
+</body>
+</html>
